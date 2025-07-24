@@ -7,8 +7,9 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "ParkMaster",
-  description: "Real-time park wait times and ride information",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  description: "Get real-time wait times and ride information for your favorite theme parks. Stay updated with current ride status and plan your perfect park day.",
+  keywords: ["theme park", "wait times", "rides", "real-time", "park planner"],
+  authors: [{ name: "ParkMaster" }]
 };
 
 const geist = Geist({

@@ -2,18 +2,29 @@
 
 import { api } from "~/trpc/react";
 
+
+interface Ride {
+  id: string;
+  name: string;
+  is_open: boolean;
+  wait_time: number | null;
+  updated_at: Date | null;
+}
+
+
 interface RideTableProps {
   parkId: string;
 }
 
 export function RideTable({ parkId }: RideTableProps) {
-  const { data: rides, isLoading, error, refetch } = api.park.getRides.useQuery(
+  const { data, isLoading, error, refetch } = api.park.getRides.useQuery(
     { parkId },
     {
       refetchInterval: 30000, // Refetch every 30 seconds
       enabled: !!parkId, // Only run query if parkId is not empty
     }
   );
+  const rides = (Array.isArray(data) ? data : []) as Ride[];
 
   if (!parkId) {
     return (
@@ -69,7 +80,7 @@ export function RideTable({ parkId }: RideTableProps) {
     );
   }
 
-  if (!rides || rides.length === 0) {
+  if (!Array.isArray(rides) || rides.length === 0) {
     return (
       <div className="rounded-xl bg-white/10 p-6 text-center">
         <p className="text-white">No ride data available for this park.</p>
@@ -103,34 +114,37 @@ export function RideTable({ parkId }: RideTableProps) {
             </tr>
           </thead>
           <tbody>
-            {rides?.map((ride) => (
-              <tr key={ride.id} className="border-b border-white/10 hover:bg-white/5">
-                <td className="px-4 py-3 text-white font-medium">{ride.name}</td>
-                <td className={`px-4 py-3 text-center font-bold ${getStatusColor(ride.is_open, ride.wait_time)}`}>
-                  {getWaitTimeDisplay(ride.wait_time, ride.is_open)}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                      ride.is_open
-                        ? "bg-green-900/50 text-green-400"
-                        : "bg-red-900/50 text-red-400"
-                    }`}
-                  >
-                    {ride.is_open ? "Open" : "Closed"}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-center text-sm text-gray-300">
-                  {formatTime(ride.updated_at)}
-                </td>
-              </tr>
-            ))}
+            {rides.map((ride) => {
+              if (!ride || typeof ride.id !== 'string') return null;
+              return (
+                <tr key={ride.id} className="border-b border-white/10 hover:bg-white/5">
+                  <td className="px-4 py-3 text-white font-medium">{ride.name}</td>
+                  <td className={`px-4 py-3 text-center font-bold ${getStatusColor(ride.is_open, ride.wait_time)}`}>
+                    {getWaitTimeDisplay(ride.wait_time, ride.is_open)}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                        ride.is_open
+                          ? "bg-green-900/50 text-green-400"
+                          : "bg-red-900/50 text-red-400"
+                      }`}
+                    >
+                      {ride.is_open ? "Open" : "Closed"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center text-sm text-gray-300">
+                    {formatTime(ride.updated_at)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
       
       <div className="mt-4 text-center text-xs text-gray-400">
-        Showing {rides.length} rides • Auto-refreshes every 30 seconds
+        Showing {rides.length} rides • Data refreshes every 5 minutes
       </div>
     </div>
   );

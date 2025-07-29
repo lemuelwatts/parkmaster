@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { EnhancedParkUpdater } from "~/app/_components/enhanced-park-updater";
 import { RideTable } from "~/app/_components/ride-table";
-import { ParkNameManager } from "~/app/_components/park-name-manager";
+// import { ParkNameManager } from "~/app/_components/park-name-manager";
 
 export default function Home() {
   const [currentParkId, setCurrentParkId] = useState(""); // Start with empty, will auto-select first available park
-  const [showParkManager, setShowParkManager] = useState(false);
+  // const [showParkManager, setShowParkManager] = useState(false);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
